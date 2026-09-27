@@ -1,0 +1,215 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:janus:replay:1",
+  "title": "Janus Noise complete replay v1",
+  "type": "object",
+  "properties": {
+    "format_version": {
+      "const": 1
+    },
+    "config": {
+      "type": "object",
+      "properties": {
+        "rules_version": {
+          "const": 1
+        },
+        "starting_lives": {
+          "const": 3
+        },
+        "initial_hand_size": {
+          "const": 4
+        },
+        "board_capacity": {
+          "const": 3
+        },
+        "deck_values": {
+          "const": [
+            1,
+            1,
+            1,
+            2,
+            2,
+            2,
+            3,
+            3,
+            3,
+            4,
+            4,
+            4
+          ]
+        }
+      },
+      "required": [
+        "rules_version",
+        "starting_lives",
+        "initial_hand_size",
+        "board_capacity",
+        "deck_values"
+      ],
+      "additionalProperties": false
+    },
+    "seed": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]{0,19})$"
+    },
+    "actions": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "actor": {
+                "type": "integer",
+                "enum": [
+                  0,
+                  1
+                ]
+              },
+              "type": {
+                "const": "play"
+              },
+              "card": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 23
+              }
+            },
+            "required": [
+              "actor",
+              "type",
+              "card"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "actor": {
+                "type": "integer",
+                "enum": [
+                  0,
+                  1
+                ]
+              },
+              "type": {
+                "const": "attack"
+              },
+              "card": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 23
+              }
+            },
+            "required": [
+              "actor",
+              "type",
+              "card"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "actor": {
+                "type": "integer",
+                "enum": [
+                  0,
+                  1
+                ]
+              },
+              "type": {
+                "const": "defend"
+              },
+              "card": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 23
+              }
+            },
+            "required": [
+              "actor",
+              "type",
+              "card"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "actor": {
+                "type": "integer",
+                "enum": [
+                  0,
+                  1
+                ]
+              },
+              "type": {
+                "const": "pass"
+              }
+            },
+            "required": [
+              "actor",
+              "type"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      }
+    },
+    "expected_result": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "outcome": {
+              "const": "win"
+            },
+            "winner": {
+              "enum": [
+                0,
+                1
+              ]
+            },
+            "reason": {
+              "const": "zero_lives"
+            }
+          },
+          "required": [
+            "outcome",
+            "winner",
+            "reason"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "outcome": {
+              "const": "draw"
+            },
+            "winner": {
+              "type": "null"
+            },
+            "reason": {
+              "const": "both_players_stuck"
+            }
+          },
+          "required": [
+            "outcome",
+            "winner",
+            "reason"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    }
+  },
+  "required": [
+    "format_version",
+    "config",
+    "seed",
+    "actions"
+  ],
+  "additionalProperties": false
+}

@@ -14,7 +14,7 @@ One codebase produces multiple binaries and bindings. Do not fork rules by platf
 
 ## Planned repository layout
 
-These are target directories; application scaffolding has not yet been created.
+The M0 skeleton now tracks these directories with responsibility READMEs. Only the C++ contracts/configuration validator and headless checks have implementation; later systems remain placeholders.
 
 | Path | Responsibility |
 | --- | --- |
@@ -36,11 +36,11 @@ The backend MVP covers minimal identity, profiles, matchmaking, server assignmen
 
 ## Core contract to define in M0
 
-Define `GameState`, `Observation`, `Action`, `PlayerId`, `CardId`, `GameResult`, and `GameConfig`. Separate complete internal state from player-visible observations, and express every game transition through an action.
+M0 defines `GameState`, `Observation`, `Action`, `PlayerId`, `CardId`, `GameResult`, and `GameConfig` in `core/include/janus/`. See [core-contract.md](core-contract.md) for field, visibility, validation, and lifecycle semantics. The C++20 library uses CMake >= 3.20; source lives in `core/src/`, contract checks in `tests/`. It has no external dependencies.
 
-The MVP conceptual lifecycle is `reset(seed) → observe → legal_actions → step → result`. The vision additionally anticipates `observe(player)`, `legal_actions(player)`, rewards, completion state, cloning, and serialization for AI. These describe requirements, not finalized C++ signatures. Define concrete types and semantics during M0.
+The finalized M0 lifecycle is `Game(config) → reset(seed) → observe(player) → legal_actions(player) → step(action) → result()`, with trusted owned `snapshot()` for debugging. The Game methods are declarations only until M1. Rewards, cloning, and serialization/bindings follow later milestones.
 
-Replays contain configuration, seed, and actions sufficient to reconstruct an entire match. Specify the format in M0 and verify parity between direct C++, Godot, server, and Python execution as those integrations arrive. State serialization or an equivalent debugging representation is required in M1; shared network messages/versioning are defined in M4.
+Replays contain configuration, seed, and actor-tagged actions sufficient to reconstruct an entire match. M0 specifies [format/rules version 1](replay.md) and its complete fixture. Verify actual deterministic C++ execution in M1 and parity with Godot, server, and Python as integrations arrive. State serialization or an equivalent debugging representation is required in M1; shared network messages/versioning are defined in M4.
 
 ## Bots and AI
 

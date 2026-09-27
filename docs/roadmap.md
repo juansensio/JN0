@@ -2,11 +2,13 @@
 
 ## Current baseline
 
-The source roadmap states **ROADMAP DEFINED**, with implementation not started. M0 is the active milestone and is **NOT STARTED**. No milestone is closed by these documentation summaries. The next implementation action is to create the minimal monorepo and define C++ state, observation, action, and game interfaces before implementing rules.
+The source roadmap baseline was **ROADMAP DEFINED**, implementation not started. M0 is now the active milestone and **IN PROGRESS**: 6/8 tasks complete and 4/5 gates passed. Contracts, specifications, skeleton, local build/checks, and CI configuration exist. M0 remains open until hosted CI succeeds; M1 gameplay has not started.
 
 Only mark a milestone done when every exit gate is demonstrated. M1–M6 follow sequential dependencies. M7 can begin after M2 and run alongside M3–M6. M8 can begin after M3. M9 requires M3–M8 to be complete. Until M0 closes, all later work is blocked.
 
 ## M0 Spec and monorepo
+
+**Task tracker:** [M0 implementation tasks](m0-tasks.md). Implementation IN PROGRESS, with 6/8 tasks complete and 4/5 exit gates passed. M0-07 awaits a successful hosted CI run; M0-08 cannot close before that evidence.
 
 **Work:** create the target directories in [architecture](architecture.md), formalize rules and edge cases, define the core types and lifecycle, and specify replay as config + seed + actions. Add a minimal C++ project and basic CI.
 
@@ -106,3 +108,21 @@ Next concrete action:
 ```
 
 Track correctness/determinism, simulation throughput, platform parity, networking errors, rating/inventory consistency, AI baseline performance, and duplicated rules outside the core. Do not invent benchmark targets or mark unsupported metrics as passing.
+
+## Progress — 2026-09-27 / working tree
+
+Active milestone: M0. Status: IN PROGRESS.
+
+Completed: explicit rules D01–D07 and edge cases; C++20 monorepo skeleton; separate state/observation/config/result declarations; action/lifecycle contract and transition table; SplitMix64/shuffle specification; JSON replay schema and reviewed complete seed-0 fixture; reusable core target/config validator; headless contract consumer; GitHub CI configuration; developer commands.
+
+Evidence: [M0 validation](m0-validation.md), [contract](core-contract.md), [replay](replay.md), [complete trace](replay-example.md), [task tracker](m0-tasks.md). Fresh Release configure/build succeeded with CMake 4.0.3 and Apple Clang 21; CTest 1/1 passed. No external core dependencies.
+
+Gates met: G0-1 pure-core boundary; G0-2 all transitions represented by Action; G0-3 separate owned observation/state; G0-4 config + seed + actions represents a terminal match (specification review, not M1 execution).
+
+Pending: G0-5 hosted CI execution on the changed revision. Workflow configuration and local checks are complete, but no successful hosted run is available. No milestone closure or M1 activation yet.
+
+Problems/debt: local JSON Schema validator unavailable; schema/fixture JSON parsed and shapes reviewed. Replay loading/execution, deterministic C++ parity, rules, and observation projection are intentionally M1 work, not claimed by contract checks. Original source documents unchanged; additions to unspecified source details are recorded in D01–D07, with no changed original combat/life rules.
+
+Metrics: 6/8 tasks DONE; 4/5 gates PASS; clean build PASS; initial tests 1/1 PASS; unresolved gameplay/contract questions 0; replay fixture 62 accepted actions, seed 0, player 0 wins. No gameplay throughput/platform/network metrics exist yet.
+
+Next action: execute hosted CI for this revision, record run URL and commit, complete M0-07/M0-08 and activate M1. First M1 action: implement reset/setup and specified RNG with seed-0 golden ordering tests before implementing transitions.

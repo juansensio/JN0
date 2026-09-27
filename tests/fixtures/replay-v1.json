@@ -1,0 +1,338 @@
+{
+  "format_version": 1,
+  "config": {
+    "rules_version": 1,
+    "starting_lives": 3,
+    "initial_hand_size": 4,
+    "board_capacity": 3,
+    "deck_values": [
+      1,
+      1,
+      1,
+      2,
+      2,
+      2,
+      3,
+      3,
+      3,
+      4,
+      4,
+      4
+    ]
+  },
+  "seed": "0",
+  "actions": [
+    {
+      "actor": 0,
+      "type": "play",
+      "card": 6
+    },
+    {
+      "actor": 1,
+      "type": "play",
+      "card": 23
+    },
+    {
+      "actor": 0,
+      "type": "attack",
+      "card": 6
+    },
+    {
+      "actor": 1,
+      "type": "defend",
+      "card": 23
+    },
+    {
+      "actor": 1,
+      "type": "attack",
+      "card": 23
+    },
+    {
+      "actor": 0,
+      "type": "play",
+      "card": 8
+    },
+    {
+      "actor": 1,
+      "type": "attack",
+      "card": 23
+    },
+    {
+      "actor": 0,
+      "type": "defend",
+      "card": 8
+    },
+    {
+      "actor": 0,
+      "type": "play",
+      "card": 4
+    },
+    {
+      "actor": 1,
+      "type": "attack",
+      "card": 23
+    },
+    {
+      "actor": 0,
+      "type": "defend",
+      "card": 4
+    },
+    {
+      "actor": 0,
+      "type": "play",
+      "card": 5
+    },
+    {
+      "actor": 1,
+      "type": "attack",
+      "card": 23
+    },
+    {
+      "actor": 0,
+      "type": "defend",
+      "card": 5
+    },
+    {
+      "actor": 0,
+      "type": "play",
+      "card": 3
+    },
+    {
+      "actor": 1,
+      "type": "attack",
+      "card": 23
+    },
+    {
+      "actor": 0,
+      "type": "defend",
+      "card": 3
+    },
+    {
+      "actor": 0,
+      "type": "play",
+      "card": 11
+    },
+    {
+      "actor": 1,
+      "type": "attack",
+      "card": 23
+    },
+    {
+      "actor": 0,
+      "type": "defend",
+      "card": 11
+    },
+    {
+      "actor": 0,
+      "type": "play",
+      "card": 9
+    },
+    {
+      "actor": 1,
+      "type": "play",
+      "card": 18
+    },
+    {
+      "actor": 0,
+      "type": "attack",
+      "card": 9
+    },
+    {
+      "actor": 1,
+      "type": "defend",
+      "card": 18
+    },
+    {
+      "actor": 1,
+      "type": "play",
+      "card": 19
+    },
+    {
+      "actor": 0,
+      "type": "attack",
+      "card": 9
+    },
+    {
+      "actor": 1,
+      "type": "defend",
+      "card": 19
+    },
+    {
+      "actor": 1,
+      "type": "play",
+      "card": 20
+    },
+    {
+      "actor": 0,
+      "type": "attack",
+      "card": 9
+    },
+    {
+      "actor": 1,
+      "type": "defend",
+      "card": 20
+    },
+    {
+      "actor": 1,
+      "type": "play",
+      "card": 15
+    },
+    {
+      "actor": 0,
+      "type": "attack",
+      "card": 9
+    },
+    {
+      "actor": 1,
+      "type": "defend",
+      "card": 15
+    },
+    {
+      "actor": 1,
+      "type": "play",
+      "card": 16
+    },
+    {
+      "actor": 0,
+      "type": "attack",
+      "card": 9
+    },
+    {
+      "actor": 1,
+      "type": "defend",
+      "card": 16
+    },
+    {
+      "actor": 1,
+      "type": "play",
+      "card": 17
+    },
+    {
+      "actor": 0,
+      "type": "attack",
+      "card": 9
+    },
+    {
+      "actor": 1,
+      "type": "defend",
+      "card": 17
+    },
+    {
+      "actor": 1,
+      "type": "play",
+      "card": 21
+    },
+    {
+      "actor": 0,
+      "type": "attack",
+      "card": 9
+    },
+    {
+      "actor": 1,
+      "type": "defend",
+      "card": 21
+    },
+    {
+      "actor": 1,
+      "type": "play",
+      "card": 22
+    },
+    {
+      "actor": 0,
+      "type": "play",
+      "card": 10
+    },
+    {
+      "actor": 1,
+      "type": "attack",
+      "card": 22
+    },
+    {
+      "actor": 0,
+      "type": "defend",
+      "card": 10
+    },
+    {
+      "actor": 0,
+      "type": "play",
+      "card": 7
+    },
+    {
+      "actor": 1,
+      "type": "play",
+      "card": 12
+    },
+    {
+      "actor": 0,
+      "type": "attack",
+      "card": 7
+    },
+    {
+      "actor": 1,
+      "type": "defend",
+      "card": 12
+    },
+    {
+      "actor": 1,
+      "type": "play",
+      "card": 13
+    },
+    {
+      "actor": 0,
+      "type": "attack",
+      "card": 7
+    },
+    {
+      "actor": 1,
+      "type": "defend",
+      "card": 13
+    },
+    {
+      "actor": 1,
+      "type": "play",
+      "card": 14
+    },
+    {
+      "actor": 0,
+      "type": "attack",
+      "card": 7
+    },
+    {
+      "actor": 1,
+      "type": "defend",
+      "card": 14
+    },
+    {
+      "actor": 1,
+      "type": "pass"
+    },
+    {
+      "actor": 0,
+      "type": "attack",
+      "card": 7
+    },
+    {
+      "actor": 1,
+      "type": "pass"
+    },
+    {
+      "actor": 0,
+      "type": "attack",
+      "card": 7
+    },
+    {
+      "actor": 1,
+      "type": "pass"
+    },
+    {
+      "actor": 0,
+      "type": "attack",
+      "card": 7
+    }
+  ],
+  "expected_result": {
+    "outcome": "win",
+    "winner": 0,
+    "reason": "zero_lives"
+  }
+}
