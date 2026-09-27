@@ -1,7 +1,7 @@
 # Coding guidance
 
 - Read `docs/README.md`, `docs/architecture.md`, `docs/game-rules.md`, and the active milestone in `docs/roadmap.md` before coding. The original MVP Roadmap is the operational source of truth; the vision supplies long-term direction.
-- Work on the active milestone and its gates. M0, M1, and M2 are DONE; M3 is active and NOT STARTED. Follow the resolved rules and interfaces when implementing gameplay. Do not mark a milestone done without evidence.
+- Work on the active milestone and its gates. M0–M3 are DONE; M4 is active and NOT STARTED. Authorized M3 presentation follow-ups preserve its closed gameplay gates. Follow the resolved rules and interfaces when implementing gameplay. Do not mark a milestone done without evidence.
 - Keep all rules in the pure C++20/23 core. No Godot, rendering, audio, network, OS, or platform dependencies in core logic. Use Godot 4 for presentation, Python/PyTorch for AI, and TypeScript/Node for backend services.
 - Reuse the same core across offline play, authoritative servers, bots, simulator, and bindings. Use explicit RNG seeds and reproducible config + seed + action replays. Simulation must not depend on FPS or wall time.
 - Separate full `GameState` from player-visible `Observation`. The core validates actions; ranked trusts the server. Offline must work without a backend. Keep platform integrations behind adapters.

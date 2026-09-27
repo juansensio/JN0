@@ -1,7 +1,7 @@
 # C++ ↔ Godot integration
 
 M3 implements offline PvE in Godot 4.7 through the optional macOS GDExtension.
-`client/main.gd` displays cards and submits choices; `JanusGame` translates values
+`client/main.gd` orchestrates modular tabletop components and submits choices; `JanusGame` translates values
 and owns one `janus::Game`. The scene tree owns the native Node. The adapter links
 `janus_bots`, which links the same pure core used by the CLI and simulator.
 
@@ -43,7 +43,8 @@ The client does not offer continuation from imported replays.
 
 ## Presentation and ownership
 
-GDScript redraws only from `observe(human)` and `legal_actions(human)`. Every
+See [tabletop presentation](client-presentation.md) for component ownership,
+transition sequencing and cancellation. GDScript redraws only from `observe(human)` and `legal_actions(human)`. Every
 click is checked again by core. During defense it uses `acting_player`, rather
 than main-turn owner. Opponent actions run one at a time with a presentation
 pause; elapsed time never enters simulation. Human/bot seats can be switched at

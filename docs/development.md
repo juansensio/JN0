@@ -65,9 +65,11 @@ godot --path client
 ```
 
 Choose RandomBot or HeuristicBot, a seat, and a decimal seed; press New / Restart.
-Click Play in your hand, Attack on your board, or Defend when prompted. Only core
-legal actions have buttons. A forced Pass appears when appropriate. Results and
-restart are visible in the same screen. Scrolling supports smaller windows.
+Open Match settings to change seed/bot/seat. Hover and select a hand or board
+card, then confirm Play, Attack, or Defend below the hand. Only core legal actions
+are available. A forced Pass appears when appropriate. The tabletop canvas scales
+with the window; results and restart remain in the same screen. See
+[presentation/debugging](client-presentation.md).
 
 Save replay writes `user://last-match.json` (the full path is displayed), replacing
 the previous save. Load replay opens any valid core-format JSON and presents the
@@ -81,14 +83,16 @@ ctest --test-dir build/godot --output-on-failure
 ```
 
 Nine checks include `godot_offline`: import, native boundary/atomic rejection,
-exact fixture parity, 32 complete games through real scene action buttons,
+exact fixture parity, 32 complete games through real scene selection/confirmation,
 replay view and restart, both bots/seats, and headless verification of every saved
-client match. Tests write artifacts/logs under `build/godot`. Godot needs normal
+client match. Four additional animated games exercise all combat outcomes, card
+hover/click/confirmation, input locking, visible-zone counts, anonymous backs, and
+restart/import during animation. Tests write artifacts/logs under `build/godot`. Godot needs normal
 macOS access to system certificates and its editor settings directory; a restricted
 sandbox can emit platform errors even when game assertions pass. Do not suppress
 those errors as evidence of a clean Godot run.
 
-Optional visual QA renders the actual game viewport at turn, defense and result:
+Optional visual QA renders the actual game viewport at turn, selection, defense, combat, result and 960 × 675:
 
 ```sh
 godot --path client --script res://tests/render_check.gd -- "$PWD/build/godot/m3-client"

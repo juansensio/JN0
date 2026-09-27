@@ -254,3 +254,31 @@ fixture parity PASS; integration assertion failures 0; duplicated rules 0.
 Next concrete action: begin M4 with versioned action/observation/result messages
 and the authoritative match-server integration. M7 and M8 are dependency-eligible;
 no later milestone is implemented or closed here.
+
+## M3 tabletop presentation follow-up — 2026-09-27 / working tree
+
+Status: requested presentation follow-up complete. M3 remains DONE; active M4
+remains NOT STARTED. [Validation](log/m3-tabletop-validation.md).
+
+Completed: modular Godot card/hand/board/pile/HUD/settings/table scenes/scripts;
+player-relative tabletop, fanned hover/select hand, anonymous opponent backs,
+mirrored deck/discard counts, legal confirmation, lives/turn/result HUD; animated
+play/draw/reveal, clash/impact, survivor return, destruction-to-discard, direct
+life loss and pass feedback. Input/bot pacing waits for animation; restart/import
+cancel in-flight presentation. Window scaling and component debugging documented.
+
+Evidence: required root configure/build/test PASS (8/8); full optional Godot suite
+PASS (9/9), final focused integration PASS. 32 scene games / 306 human defenses,
+32 CLI replay parity checks; 4 animated games / 242 actions, all 3 combat outcomes,
+both bots/seats, hover/click/confirmation, hidden backs/counts/input-lock/cancellation
+checks PASS. Seven actual viewport captures visually inspected, including combat
+and 960 × 675. Final normal-access Godot logs clean; rule duplication added 0.
+
+Debt/limitations: procedural prototype art, no sound; local macOS only, no hosted
+CI or manual human mouse-play claim. Existing static replay view and single save
+slot remain. Initial restricted runs produced platform access errors; final checks
+ran with approved normal macOS access. Original Word documents unchanged. Stale
+M3 status in AGENTS.md corrected to match the roadmap and user's closure statement.
+
+Next concrete action: user playtest/visual feedback; M4 still starts with versioned
+action/observation/result messages and the authoritative match-server boundary.

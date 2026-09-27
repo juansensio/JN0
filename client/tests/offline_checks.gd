@@ -75,6 +75,7 @@ func run_checks() -> void:
 
 	# Exercise the real scene and its button callbacks, including pending defense.
 	var scene = load("res://main.tscn").instantiate()
+	scene.animations_enabled = false
 	root.add_child(scene)
 	var completed := 0
 	var defenses := 0
@@ -94,6 +95,8 @@ func run_checks() -> void:
 							break
 						if state.phase == "awaiting_defense":
 							defenses += 1
+						scene.select_card(scene.legal[0].card)
+						check(scene.action_buttons[0].visible, "Selected card exposes legal action")
 						scene.action_buttons[0].pressed.emit()
 					else:
 						scene.advance_bot()

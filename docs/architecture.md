@@ -6,6 +6,10 @@ All game rules exist once in a pure C++20/23 core. It owns state, turn progressi
 
 Godot 4 owns presentation, input, animation, audio, and platform integration. GDScript is appropriate for UI; game rules must stay in C++. Integrate through GDExtension/godot-cpp. See [the integration guide](godot-integration.md) for the current offline PvE wiring and future adapter feature workflow.
 
+The offline client uses modular Godot table/card/zone/HUD/settings components,
+with a presentation animation director fed by accepted actions and player-visible
+observation transitions. See [presentation architecture](client-presentation.md).
+
 Offline/PvE runs the core locally and requires no backend. Ranked runs the same core in an authoritative match server. Clients send actions and present permitted observations; they cannot decide results or mutate authoritative state. Never expose the complete hidden-information state as a player's observation.
 
 Simulation advances through actions, not elapsed wall time or FPS. Every random choice uses an explicit seed. The same configuration, seed, and action sequence must reproduce the same result. Headless simulation must run without Godot, rendering, audio, networking, or an FPS limit.
