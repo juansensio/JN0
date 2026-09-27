@@ -10,7 +10,6 @@ option(JANUS_BUILD_GODOT "Build the Godot GDExtension" OFF)
 if(JANUS_BUILD_GODOT)
   set(GODOTCPP_API_VERSION "4.7" CACHE STRING "Godot API version")
   add_subdirectory(third_party/godot-cpp EXCLUDE_FROM_ALL)
-  add_subdirectory(bindings/godot)
 endif()
 
 find_package(Threads REQUIRED)
@@ -25,8 +24,24 @@ target_link_libraries(janus_cli PRIVATE janus_simulator)
 
 set_target_properties(janus_bots janus_simulator janus_cli PROPERTIES CXX_EXTENSIONS OFF)
 
+if(JANUS_BUILD_GODOT)
+  set_target_properties(janus_bots PROPERTIES POSITION_INDEPENDENT_CODE ON)
+  add_subdirectory(bindings/godot)
+endif()
+
 include(CTest)
 if(BUILD_TESTING)
+  if(JANUS_BUILD_GODOT)
+    find_program(JANUS_GODOT_EXECUTABLE godot REQUIRED)
+    add_test(NAME godot_offline COMMAND ${CMAKE_COMMAND}
+      -DGODOT=${JANUS_GODOT_EXECUTABLE}
+      -DCLIENT=${CMAKE_CURRENT_SOURCE_DIR}/client
+      -DWORK=${CMAKE_CURRENT_BINARY_DIR}
+      -DFIXTURE=${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/replay-v1.json
+      -DCLI=$<TARGET_FILE:janus_cli>
+      -P ${CMAKE_CURRENT_SOURCE_DIR}/tests/godot_offline.cmake)
+    set_tests_properties(godot_offline PROPERTIES TIMEOUT 300)
+  endif()
   add_executable(contract_checks tests/contract_checks.cpp)
   target_link_libraries(contract_checks PRIVATE janus_core)
   add_test(NAME core_contracts COMMAND contract_checks)

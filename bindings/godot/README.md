@@ -1,12 +1,10 @@
-# bindings/godot
+# Godot binding
 
-Optional macOS GDExtension smoke-test adapter. `JanusGame` is a native Node
-owning the existing `janus::Game`; `_ready()` resets seed 42 and prints setup
-counts and the number of core-provided legal actions. It adds no game rules.
+Optional macOS Godot 4.7 GDExtension. `JanusGame` owns the existing pure core and
+reuses `janus_bots` for offline opponents. It exposes owned observations, legal
+actions, validated submissions, bot steps, seeded resets, and core-format replay
+import/export. All rules remain in `janus_core`.
 
-The full snapshot is used only inside this trusted diagnostic; no private card
-data is returned to GDScript. Future player-facing presentation must use
-`Observation`. This is a pre-M3 loading check, not offline PvE or replay parity.
-See [build/run instructions](../../docs/development.md#pre-m3-godot-smoke-test).
-See [the integration guide](../../docs/godot-integration.md) for loading,
-ownership, method binding, and future observation/action interfaces.
+See [interface and ownership](../../docs/godot-integration.md),
+[build/run/test commands](../../docs/development.md#godot-offline-pve-m3), and
+[M3 validation](../../docs/log/m3-validation.md).

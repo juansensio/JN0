@@ -1,6 +1,6 @@
 # Janus Noise
 
-A minimal two-player card game with one deterministic C++20 rules core. M2 adds a terminal game, baseline bots, batch simulation, evaluation, and benchmarks. Everything here works offline; no Godot or backend is needed.
+A minimal two-player card game with one deterministic C++20 rules core. M2 adds a terminal game, baseline bots, batch simulation, evaluation, and benchmarks. M3 adds an optional Godot offline PvE client. The terminal game works without Godot; no backend is required.
 
 ## Build and check
 
@@ -14,7 +14,11 @@ make test
 
 The executable is `build/janus_cli` (on Windows, use `janus_cli.exe`; a multi-configuration generator may place it in `build/Release/`). Direct CMake commands are in [development instructions](docs/development.md).
 
-## Play your first games
+## Play with the Godot client
+
+Build/import the optional macOS extension, then run `godot --path client`. Select either baseline bot and seat, play through core-provided action buttons, restart, and save/load replays. See [setup and controls](docs/development.md#godot-offline-pve-m3).
+
+## Play your first terminal games
 
 Start with RandomBot, then try HeuristicBot and the other seat:
 

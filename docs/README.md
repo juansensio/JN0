@@ -18,3 +18,5 @@ Read these references before implementing a feature:
 
 - [M2 protocol and validation](log/m2-validation.md): baseline bots, seat-paired evaluation, worker scaling, memory stress, and CLI integration evidence.
 - [Play the CLI game](../README.md): build, first games, legal-action prompts, and replays.
+
+- [M3 offline PvE validation](log/m3-validation.md): native adapter, real scene/button games, replay parity, and Godot visual QA.

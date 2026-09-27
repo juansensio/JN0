@@ -1,115 +1,62 @@
 # C++ ↔ Godot integration
 
-The current integration is a macOS/Godot 4.7 smoke test. It loads the shared core
-and prints seeded setup data. The feature workflow below guides future M3 work;
-observation conversion, action submission, signals, bots, and replay loading are
-not implemented yet.
+M3 implements offline PvE in Godot 4.7 through the optional macOS GDExtension.
+`client/main.gd` displays cards and submits choices; `JanusGame` translates values
+and owns one `janus::Game`. The scene tree owns the native Node. The adapter links
+`janus_bots`, which links the same pure core used by the CLI and simulator.
 
-## Layers and ownership
+## Bound interface
 
-```text
-client/                    GDScript: scenes, input, display, animation
-    ↓ bound methods        ↑ converted observations/results (future)
-bindings/godot/            C++ JanusGame Node: Godot/core adapter
-    ↓ core API
-core/                      C++ janus::Game: state, legality, rules, RNG
-```
-
-`JanusGame` owns one `janus::Game` by value. Creating another Node creates another
-independent game. The scene tree owns the Node after `add_child(game)`; destroying
-the Node also destroys its core game. Avoid copying game state into a second
-authoritative model in GDScript.
-
-The adapter translates data and delegates operations. Core code never includes
-Godot headers. GDScript presents core-provided choices and results; combat,
-draws, turn changes, legality, and victory stay in `janus::Game`. Animations may
-delay input or presentation, but simulation never depends on frame rate or time.
-
-## How the current project loads
-
-| File | Role |
+| Method | Contract |
 | --- | --- |
-| Root `CMakeLists.txt` | Optional `JANUS_BUILD_GODOT` switch, default OFF; makes core position-independent and includes godot-cpp/adapter when enabled |
-| `bindings/godot/CMakeLists.txt` | Links `janus_core` and godot-cpp into `client/bin/libjanus_godot.dylib` |
-| `client/bin/janus.gdextension` | Tells Godot which library to load and names its `janus_library_init` entry point |
-| `bindings/godot/src/register_types.cpp` | Initializes the binding and registers `JanusGame` at scene initialization level |
-| `bindings/godot/src/janus_game.hpp` | Declares the native Node, `GDCLASS`, and owned core game |
-| `bindings/godot/src/janus_game.cpp` | Exposes `smoke_test` through `_bind_methods()` and delegates setup to the core |
-| `client/main.gd` | Creates `JanusGame.new()` and attaches it to the dummy scene |
+| `start(seed: String)` | Reset to default config; decimal unsigned 64-bit seed, including `18446744073709551615`. Invalid input leaves the match unchanged. Resets replay and RandomBot stream. |
+| `observe(viewer: int)` | Owned player-visible Dictionary for seat 0/1; invalid viewers return failure. |
+| `legal_actions(actor: int)` | Ordered Array of `{actor, kind, card}` from core; invalid/nonacting/terminal actors get an empty array. |
+| `submit(actor, kind, card)` | Convert `play`, `attack`, `defend`, or `pass` and call core `step`. Non-pass IDs must fit uint16; legality remains in core. Pass uses card -1 in output. |
+| `bot_step(actor, kind)` | `random` or `heuristic`; choose using that seat's observation and core legal actions, then use the same accepted-action path. |
+| `export_replay()` | Core-encoded JSON of config, full-range seed, accepted actions, and expected result when terminal. Partial exports are supported. |
+| `load_replay(json)` | Parse/execute via core codec, validate exact candidate full state, then replace the match atomically. Accept valid partial or terminal logs; reject malformed/illegal/result-mismatched input unchanged. |
 
-Godot imports the descriptor and loads the library, then calls the exported entry
-point. Registration makes `JanusGame` available to GDScript. When the dummy scene
-attaches the Node, its `_ready()` calls `smoke_test()`, which resets seed 42 and
-prints counts. Calling `smoke_test()` again resets the match; it is a diagnostic,
-not a read-only status query.
+Mutation calls return `{ok: bool, error: String}`. Accepted submissions/bot steps
+also return `action`. Core action rejection adds numeric `code` matching
+`janus::ActionError` declaration order. Invalid conversion does not reach core.
+No full-state getter is bound; snapshots are confined to native replay validation.
 
-The C++ declaration alone does not expose a method to GDScript. For example, the
-existing binding is:
+`observe` has `ok`, `error`, `viewer`, `config`, `own_hand`, `players`,
+`active_player`, `acting_player`, `phase`, `pending_attack`, `consecutive_passes`,
+`action_count`, and `result`. Config exposes the core's fields including ordered
+`deck_values`. Each public player has lives, deck/hand counts, ordered board and
+discard. Cards are `{id, value}`. It never returns seed, deck order, or the other
+hand. Returned values cannot alias core storage. Actor/winner absence is -1;
+missing pending attack is an empty Dictionary; present pending attack contains
+`attacker` and `card`. Phase strings are `main`, `awaiting_defense`, `terminal`;
+result outcome/reason strings match the core replay format (`ongoing`/`none` for
+unfinished games).
 
-```cpp
-ClassDB::bind_method(D_METHOD("smoke_test"), &JanusGame::smoke_test);
-```
+The replay export is a trusted offline debugging artifact, separate from player
+observation. Its seed reconstructs private state, as required by the replay
+specification; it is not a future ranked observation payload. Loading a replay
+opens a static verified view. Restart begins a new match. The adapter resets its
+RandomBot stream on import; recorded actions replay exactly, but continuing a
+partial replay through native bot calls does not restore historical policy RNG.
+The client does not offer continuation from imported replays.
 
-For an additional native class, add its sources to the adapter target and register
-it in `register_types.cpp`. Ordinary helper classes that GDScript never creates
-do not need Godot registration.
+## Presentation and ownership
 
-## Adding a gameplay feature
+GDScript redraws only from `observe(human)` and `legal_actions(human)`. Every
+click is checked again by core. During defense it uses `acting_player`, rather
+than main-turn owner. Opponent actions run one at a time with a presentation
+pause; elapsed time never enters simulation. Human/bot seats can be switched at
+restart. There is no network/backend call, second game state, combat calculation,
+card-value derivation, or rule-based action generation in GDScript.
 
-1. Identify the existing core operation in [the contract](core-contract.md).
-   If the feature changes rules, implement and test it in core first, following
-   [the resolved rules](game-rules.md) and active milestone scope.
-2. Add a thin public adapter method and bind it in `_bind_methods()`. Convert
-   Godot input to core types, validate conversion, call core, and translate the
-   returned error/result. Do not let invalid enum values or narrowing integer
-   conversions reach core accidentally.
-3. Convert owned core output into Godot-supported values such as `Dictionary`,
-   `Array`, integers, strings, and booleans. Define field names, enum mapping,
-   optional-value representation, and integer ranges explicitly. Preserve card
-   IDs and zone order; never use a visual card position as its identity.
-4. Update GDScript to call the adapter and redraw from the returned observation.
-   Signals can notify UI after accepted transitions or reset; register them in
-   the adapter when introduced. Refresh legal actions after every accepted step
-   so a stale UI selection is still checked by the core.
-5. Verify core behavior and the actual Godot call path. Record evidence and any
-   changed interface in the docs before claiming a milestone gate.
+`register_types.cpp` registers `JanusGame` at scene initialization, and
+`_bind_methods()` exposes its public methods. The extension descriptor loads
+`client/bin/libjanus_godot.dylib` through `janus_library_init`. C++ edits require
+rebuilding and restarting Godot; native hot reload is not configured. Additional
+platform descriptors/builds belong to M8.
 
-The intended offline flow is `reset(seed) → observe(viewer) + legal_actions(actor)
-→ step(action) → refresh observation/actions/result`. These are core API names,
-not currently bound GDScript methods. During pending defense, the acting player
-differs from the main-turn owner; use the observation's acting-player field.
-
-Return `Observation` to player UI. `snapshot()` contains deck order, both private
-hands, and seed; its current use is confined to trusted C++ smoke diagnostics.
-Never make it the general UI data source. Keep returned values independent of
-mutable core storage, and report rejected actions without changing the displayed
-authoritative state.
-
-For bots, reuse `janus_bots` with that bot's observation and legal actions, then
-submit its chosen action through the same core step path. For replay loading,
-reuse `janus/replay.hpp` and the existing codec/executor; compare the same config,
-seed, and accepted actions with headless execution. Do not recreate either system
-in GDScript. Seed conversion must preserve the core's unsigned 64-bit range if
-the eventual Godot interface supports arbitrary replay seeds.
-
-## Build, verify, and troubleshoot
-
-Follow [development commands](development.md#pre-m3-godot-smoke-test) for dependency
-initialization, separate extension build, project import, and headless run.
-Rebuild `janus_godot` after C++ changes; GDScript edits do not require a native
-rebuild. Restart Godot after rebuilding the library; hot reload is not configured.
-Generated libraries and `.godot/` cache are ignored, while the descriptor and
-scene sources are tracked. Additional platforms belong to later milestone work.
-
-If `JanusGame` is unknown, check the library exists, import the project, and inspect
-extension loading errors before debugging the script. The descriptor's symbol
-must match the exported entry point, and its API minimum must be compatible with
-the engine. Keep the godot-cpp submodule revision and selected API deliberate when
-upgrading; rebuild and rerun checks after a change.
-
-Run `make configure`, `make build`, and `make test` to protect the headless
-workflow. For adapter changes, also build/run the extension and check conversion
-errors, hidden-information boundaries, illegal-action rejection, and replay parity
-as those interfaces arrive. The existing [smoke evidence](log/pre-m3-godot-smoke.md)
-proves loading/setup only and records a first-import crash; it does not establish
-full offline play or replay parity.
+See [build/run/test instructions](development.md#godot-offline-pve-m3) and
+[M3 evidence](log/m3-validation.md). A feature should use an existing core operation,
+add a thin bound conversion, refresh observations/legal choices, and verify the
+actual Godot path. Rule changes belong in the pure core first.

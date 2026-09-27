@@ -44,33 +44,58 @@ The sanitizer commands above also cover all M2 targets; use `build/m2-sanitized`
 
 Choose a worker count supported by your hardware. Sanitizers run much slower than Release; benchmark Release separately without other checks running. Apple Clang/macOS AddressSanitizer does not provide LeakSanitizer; report that limitation alongside peak-memory stress observations. See [M2 evidence](log/m2-validation.md).
 
-## Pre-M3 Godot smoke test
+## Godot offline PvE (M3)
 
-Requires Godot 4.7, Python 3 for godot-cpp binding generation, and the checked-out
-`third_party/godot-cpp` submodule (`git submodule update --init --recursive` on a
-fresh clone). The extension is optional: `JANUS_BUILD_GODOT` defaults to `OFF`,
-so the normal Makefile workflow still builds only the core/bots/simulator/CLI.
-Use a separate build directory:
+Requires Godot 4.7, Python 3 for binding generation, and the checked-out
+`third_party/godot-cpp` submodule. Initialize it on a fresh clone:
+
+```sh
+git submodule update --init --recursive
+```
+
+The optional `JANUS_BUILD_GODOT` defaults OFF, preserving the headless workflow.
+The current extension descriptor supports macOS. Build all targets in a separate
+directory, import the project, and run:
 
 ```sh
 cmake -S . -B build/godot -DCMAKE_BUILD_TYPE=Debug -DJANUS_BUILD_GODOT=ON
-cmake --build build/godot --target janus_godot --parallel 8
+cmake --build build/godot --parallel 8
 godot --headless --editor --path client --import
-godot --headless --path client --quit
+godot --path client
 ```
 
-The import discovers the extension on a fresh project before GDScript resolves
-the native class. The macOS library is `client/bin/libjanus_godot.dylib`; generated
-libraries and `client/.godot/` are ignored. The descriptor currently targets macOS
-only. Successful output reports seed 42, three lives, four hand cards, eight deck
-cards, an empty board per player, and four legal actions. Repeated seed-42 runs
-must report the same active player. This only checks loading and setup; it does
-not demonstrate complete-match replay parity or any M3 exit gate.
+Choose RandomBot or HeuristicBot, a seat, and a decimal seed; press New / Restart.
+Click Play in your hand, Attack on your board, or Defend when prompted. Only core
+legal actions have buttons. A forced Pass appears when appropriate. Results and
+restart are visible in the same screen. Scrolling supports smaller windows.
 
-To inspect the dummy project interactively:
+Save replay writes `user://last-match.json` (the full path is displayed), replacing
+the previous save. Load replay opens any valid core-format JSON and presents the
+verified state; restart to play again. Partial saves can be viewed, while CLI
+`replay` requires a complete match. See [client instructions](../client/README.md).
+
+Run the optional integration suite:
 
 ```sh
-godot --editor --path client
+ctest --test-dir build/godot --output-on-failure
 ```
 
-Press F5 to run; the scene has no visual UI, so inspect the Output panel.
+Nine checks include `godot_offline`: import, native boundary/atomic rejection,
+exact fixture parity, 32 complete games through real scene action buttons,
+replay view and restart, both bots/seats, and headless verification of every saved
+client match. Tests write artifacts/logs under `build/godot`. Godot needs normal
+macOS access to system certificates and its editor settings directory; a restricted
+sandbox can emit platform errors even when game assertions pass. Do not suppress
+those errors as evidence of a clean Godot run.
+
+Optional visual QA renders the actual game viewport at turn, defense and result:
+
+```sh
+godot --path client --script res://tests/render_check.gd -- "$PWD/build/godot/m3-client"
+```
+
+Use an absolute output prefix if launching outside the repository root. Generated
+libraries, images/replays in build, and `.godot/` cache are ignored. Rebuild after
+native changes and restart the game; hot reload is not configured. See
+[the integration guide](godot-integration.md) and [M3 evidence](log/m3-validation.md).
+The historical [pre-M3 smoke log](log/pre-m3-godot-smoke.md) remains unchanged.

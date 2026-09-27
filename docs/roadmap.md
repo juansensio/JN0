@@ -2,9 +2,9 @@
 
 ## Current baseline
 
-The source roadmap baseline was **ROADMAP DEFINED**, implementation not started. M0 is now **DONE**: 8/8 tasks complete and 5/5 gates passed, including user-confirmed hosted CI success. M1 is **DONE** with all four exit gates demonstrated locally. M2 is now **DONE** with all five exit gates demonstrated locally. M3 is active and **NOT STARTED**; its next action is to integrate the core into Godot for offline PvE.
+The source roadmap baseline was **ROADMAP DEFINED**, implementation not started. M0 is now **DONE**: 8/8 tasks complete and 5/5 gates passed, including user-confirmed hosted CI success. M1 is **DONE** with all four exit gates demonstrated locally. M2 is now **DONE** with all five exit gates demonstrated locally. M3 is now **DONE** with all four exit gates demonstrated locally. M4 is active and **NOT STARTED**; its next action is to define the authoritative protocol and match-server boundary.
 
-Only mark a milestone done when every exit gate is demonstrated. M1–M6 follow sequential dependencies. M7 can begin after M2 and run alongside M3–M6. M8 can begin after M3. M9 requires M3–M8 to be complete. M0–M2 are closed; M3 may begin. M7 is now dependency-eligible. Later milestones retain their documented dependencies.
+Only mark a milestone done when every exit gate is demonstrated. M1–M6 follow sequential dependencies. M7 can begin after M2 and run alongside M3–M6. M8 can begin after M3. M9 requires M3–M8 to be complete. M0–M3 are closed; M4 may begin. M7 is now dependency-eligible. Later milestones retain their documented dependencies.
 
 ## M0 Spec and monorepo
 
@@ -38,19 +38,21 @@ Only mark a milestone done when every exit gate is demonstrated. M1–M6 follow 
 
 ## M3 Godot offline PvE
 
-**Active milestone. Status: NOT STARTED.**
+**Status: DONE.**
 
 **Depends on M2.** Integrate Godot 4 through GDExtension/godot-cpp. Render cards as rectangles/text. Show hand, board, lives, turn, action selection, match result, and restart. Support human play against both baseline bots.
 
 **Exit gates:** a complete match works offline; Godot contains no game rules; legal actions and game state come exclusively from the core; the same replay gives the same result in headless execution and the client.
 
-**Evidence:** full offline game, zero duplicated rules, replay parity pass/fail.
+**Evidence:** [M3 validation](log/m3-validation.md). Required headless checks 8/8 PASS; optional Godot Debug checks 9/9 PASS; 32 complete real-scene games across both seats/bots, 210 human defenses, and 32/32 exported replays verified headlessly. Exact 62-action fixture parity through Godot import/submission; native input/visibility/atomic-rejection checks PASS. Actual turn/defense/result viewports visually inspected. Rules duplicated outside core 0.
 
 **Pre-M3 prerequisite test:** the optional macOS GDExtension loading/setup smoke
 test passes; see [validation](log/pre-m3-godot-smoke.md). This does not start the
 offline PvE implementation or pass any M3 exit gate.
 
 ## M4 Authoritative online PvP
+
+**Active milestone. Status: NOT STARTED.**
 
 **Depends on M3.** Link the core into the match server. Define connection, action, state/observation, and result messages. Connect two clients and support minimal reconnection or clean failure. P2P stays outside this milestone unless a concrete need emerges.
 
@@ -212,3 +214,43 @@ Documentation follow-up: added [the C++ ↔ Godot integration guide](godot-integ
 covering current loading/ownership/binding behavior and the future feature workflow.
 Planned interfaces are explicitly distinguished from implemented smoke methods.
 No rules, interfaces, or milestone gates changed; M3 remains NOT STARTED.
+
+## M3 closure — 2026-09-27 / working tree
+
+Active milestone: M3. Status: DONE. Next active milestone: M4 NOT STARTED.
+
+Completed work: optional macOS Godot 4.7 adapter for owned observations, legal
+actions, validated inputs, existing baseline bots, full-range seeded reset, and
+atomic core-codec replay import/export; minimal offline card UI with hand/boards,
+lives/counts, turn/defense, legal-action buttons, result, restart, both seats/bots,
+and save/load. Core rules and original source documents unchanged.
+
+Evidence: [M3 validation](log/m3-validation.md). Required root configure/build/test
+PASS, Release 8/8. Extension Debug configure/build PASS and CTest 9/9. Real-scene
+button automation completes 32 offline matches (seeds 0–7, both bots/seats),
+including 210 human defense selections. All 32 saved replays pass CLI execution
+and expected-result checks; both-seat observation roundtrip PASS. Specification
+fixture matches all final visible fields and exact encoded replay through Godot
+import and 62 submitted actions. Native malformed/overflow/illegal/terminal input,
+hidden-information/owned-value, and atomic replay checks PASS. Actual game turn,
+defense, and result viewports rendered and visually inspected.
+
+Gates met: complete offline match; no Godot rules; exclusively core-provided
+observation/legal choices and validation; headless/client replay result parity.
+Gates pending: none for M3.
+
+Problems/debt: local macOS validation only; other platforms await M8. Hosted CI
+not executed for this tree; no hosted Godot CI. Restricted sandbox emits Godot
+platform certificate/settings errors; final Godot checks ran with approved normal
+macOS access and clean logs. Historical first-import crash did not recur; cause
+remains unknown. Imported replay is a static verified view, single save slot,
+no native hot reload, and partial import does not restore bot RNG continuation.
+No manual human mouse-play session claimed; real scene/button paths are automated.
+
+Current metrics: M3 gates 4/4 PASS; headless Release checks 8/8 PASS; Godot Debug
+checks 9/9 PASS; full UI games 32/32; generated client replay parity 32/32;
+fixture parity PASS; integration assertion failures 0; duplicated rules 0.
+
+Next concrete action: begin M4 with versioned action/observation/result messages
+and the authoritative match-server integration. M7 and M8 are dependency-eligible;
+no later milestone is implemented or closed here.
