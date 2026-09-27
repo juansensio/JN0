@@ -46,6 +46,10 @@ Only mark a milestone done when every exit gate is demonstrated. M1–M6 follow 
 
 **Evidence:** full offline game, zero duplicated rules, replay parity pass/fail.
 
+**Pre-M3 prerequisite test:** the optional macOS GDExtension loading/setup smoke
+test passes; see [validation](log/pre-m3-godot-smoke.md). This does not start the
+offline PvE implementation or pass any M3 exit gate.
+
 ## M4 Authoritative online PvP
 
 **Depends on M3.** Link the core into the match server. Define connection, action, state/observation, and result messages. Connect two clients and support minimal reconnection or clean failure. P2P stays outside this milestone unless a concrete need emerges.
@@ -176,3 +180,30 @@ Problems/debt: local macOS/Apple Clang validation only; hosted Ubuntu CI is conf
 Current metrics: M2 gates 5/5 PASS; Release/Debug checks 8/8 PASS; worker determinism regressions 0; 62,300,744 actions per one-million-game benchmark run; 48,338.6 games/s with one worker and 159,217 games/s with eight workers (best tested, 3.294×); heuristic win rate 90.43%; rules duplicated outside core 0.
 
 Next concrete action: begin M3 by integrating the shared C++ core through GDExtension/godot-cpp, then build a minimal offline Godot view and legal-action input against both bots. M7 may run alongside later milestones, but is not included in M2 closure.
+
+## Pre-M3 smoke test — 2026-09-27 / working tree
+
+Active milestone: M3. Status: NOT STARTED (offline PvE); prerequisite smoke test complete.
+
+Completed work: optional `JANUS_BUILD_GODOT` target (default OFF); native `JanusGame`
+Node owning the existing core; macOS extension descriptor; dummy Godot scene with
+no gameplay UI or rules. Used the user's existing godot-cpp submodule checkout.
+
+Evidence: [pre-M3 validation](log/pre-m3-godot-smoke.md). Required configure/build/test
+PASS, 8/8 existing checks PASS; Debug native extension builds; two headless scene
+runs exit 0 with identical seed-42 diagnostics (player 1, 3 lives / 4 hand / 8 deck /
+0 board per seat, 4 legal actions). A second editor import exits 0.
+
+Gates met: none of M3's full-game gates. Gates pending: complete offline PvE,
+observation/legal-action UI against both bots, zero duplicated rules audit for that
+implementation, and complete-match replay parity.
+
+Problems/debt: first editor import created the cache but crashed with signal 11 on
+exit; the subsequent import and both game runs succeeded. Cause unresolved; no
+interactive editor run verified. The descriptor is macOS-only, as requested.
+
+Current metrics: smoke scene 2/2 runs PASS; existing checks 8/8 PASS; gameplay rules
+added outside core 0. Setup output equality is not full-match replay parity.
+
+Next concrete action: when starting M3, expose player Observation and legal actions
+through the adapter, then implement the minimal offline view/input against both bots.

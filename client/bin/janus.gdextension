@@ -1,0 +1,8 @@
+[configuration]
+
+entry_symbol = "janus_library_init"
+compatibility_minimum = "4.7"
+
+[libraries]
+
+macos = "res://bin/libjanus_godot.dylib"
