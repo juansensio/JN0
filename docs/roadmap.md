@@ -1,0 +1,108 @@
+# MVP roadmap
+
+## Current baseline
+
+The source roadmap states **ROADMAP DEFINED**, with implementation not started. M0 is the active milestone and is **NOT STARTED**. No milestone is closed by these documentation summaries. The next implementation action is to create the minimal monorepo and define C++ state, observation, action, and game interfaces before implementing rules.
+
+Only mark a milestone done when every exit gate is demonstrated. M1–M6 follow sequential dependencies. M7 can begin after M2 and run alongside M3–M6. M8 can begin after M3. M9 requires M3–M8 to be complete. Until M0 closes, all later work is blocked.
+
+## M0 Spec and monorepo
+
+**Work:** create the target directories in [architecture](architecture.md), formalize rules and edge cases, define the core types and lifecycle, and specify replay as config + seed + actions. Add a minimal C++ project and basic CI.
+
+**Exit gates:** no rule depends on Godot; every game transition is representable by `Action`; `GameState` and `Observation` are clearly separated; replay represents a complete game; the minimal C++ project builds with basic CI.
+
+**Evidence:** clean build yes/no, initial tests pass/fail, and zero unresolved rule questions. See [game rules](game-rules.md) for the current questions.
+
+## M1 Deterministic C++ core
+
+**Depends on M0.** Implement setup, seeded shuffle, draws, hands, boards, lives, legal actions, play, attack/defend, combat, direct damage, and terminal results. Add serialization or an equivalent debugging representation and unit/full-game tests.
+
+**Exit gates:** all MVP rules have relevant tests; repeated config + seed + actions gives exactly the same result; a full match runs from tests without Godot; the core rejects illegal actions.
+
+**Evidence:** tests pass, rule cases covered, zero determinism-regression failures.
+
+## M2 Headless simulator and baseline bots
+
+**Depends on M1.** Create the simulator CLI, RandomBot, HeuristicBot, batch execution, and reproducible benchmarks. Add workers/threads where they improve performance.
+
+**Exit gates:** no Godot linkage or window; at least thousands of consecutive games without errors or evident memory leaks; benchmarks report games/s and worker scaling through the practical limit; RandomBot vs RandomBot completes automatically; HeuristicBot beats RandomBot under a defined statistical evaluation.
+
+**Evidence:** single/multi-worker games/s, benchmark game count, heuristic win rate, zero crashes. The exact statistical protocol must be specified.
+
+## M3 Godot offline PvE
+
+**Depends on M2.** Integrate Godot 4 through GDExtension/godot-cpp. Render cards as rectangles/text. Show hand, board, lives, turn, action selection, match result, and restart. Support human play against both baseline bots.
+
+**Exit gates:** a complete match works offline; Godot contains no game rules; legal actions and game state come exclusively from the core; the same replay gives the same result in headless execution and the client.
+
+**Evidence:** full offline game, zero duplicated rules, replay parity pass/fail.
+
+## M4 Authoritative online PvP
+
+**Depends on M3.** Link the core into the match server. Define connection, action, state/observation, and result messages. Connect two clients and support minimal reconnection or clean failure. P2P stays outside this milestone unless a concrete need emerges.
+
+**Exit gates:** two devices/processes complete a server-mediated match; illegal actions are rejected; a modified client cannot decide results or arbitrarily alter state; server results can be reproduced from replay.
+
+**Evidence:** completed online games, zero synchronization errors, zero illegal actions accepted.
+
+## M5 Backend matchmaking and ranked
+
+**Depends on M4.** Use TypeScript/Node and Postgres for guest/minimal identity, profile, matchmaking queue, server creation/assignment, simple Elo or equivalent rating, global leaderboard, and basic history.
+
+**Exit gates:** Play Ranked queues and produces a match without manual intervention; the result updates both players' rating exactly once; the leaderboard reflects it; history identifies the match and result.
+
+**Evidence:** queue success, match completion, test matchmaking time, zero rating-consistency errors.
+
+## M6 Store and inventory without real money
+
+**Depends on M5.** Add backend catalog and account inventory/entitlements, a free claimable SKU such as Test Expansion, and client entitlement synchronization. Prepare payment adapters conceptually for later work.
+
+**Exit gates:** a user claims a free SKU through UI; backend grants exactly one entitlement; it survives closing/reopening the client; it unlocks demonstrable content.
+
+**Evidence:** 100% entitlement consistency, zero duplicate grants, persistence test pass.
+
+## M7 Reinforcement learning and self-play
+
+**Depends on M2; may run alongside M3–M6.** Add thin Python bindings, observation encoding, action masks, vectorized environments, baseline evaluation, initial training/self-play, checkpoints, and reproducible evaluation.
+
+**Exit gates:** Python runs multiple environments without Godot; there are no FPS/real-time waits; Python results match direct C++; a trained agent beats RandomBot under a fixed protocol; the model can later load as a game bot.
+
+**Evidence:** environment steps/s, parallel environments, training steps, win rates against both baselines, reproducibility by seed.
+
+## M8 Multiplatform builds
+
+**Depends on M3.** Produce Windows/macOS/Linux desktop builds where the environment permits, a directly installable Android build, and development iOS on an owned device with an Apple environment. Automate scripts/CI reasonably. Public store fees and Nintendo/Switch are outside this validation.
+
+**Exit gates:** the same commit produces functional desktop, Android, and development iOS builds; all use the same core; offline behavior is equivalent across platforms. Missing platform environments do not count as passing the gate.
+
+**Evidence:** platforms actually executed, build success, platform-specific bugs, zero core forks.
+
+## M9 Integrated MVP
+
+**Depends on M3–M8.** Combine offline human-vs-bot, online ranked, rating/leaderboard, free-entitlement store, a trained AI bot, installable builds, and minimal failure/match/technical-funnel telemetry.
+
+**Exit gates:** a new user completes offline → ranked → ranking → store without manual intervention; server and client use the same rules core; the RL agent plays in-game; the architecture can support Game 2 without a required core rewrite.
+
+**Evidence:** end-to-end completion, blocking errors, crashes, completed matches, zero client/server divergences.
+
+## Tracking development
+
+Before starting work, inspect the active milestone and pending gates. Record evidence for each advance rather than inferring completion from apparent progress. Document new architectural decisions in the roadmap or architecture reference before implementing them. Record nonblocking issues as debt; issues invalidating a gate block closure.
+
+Use this template for progress entries here:
+
+```text
+Date / commit:
+Active milestone:
+Status: NOT STARTED / IN PROGRESS / BLOCKED / DONE
+Completed work:
+Evidence: tests / benchmark / build / demo / link
+Gates met:
+Gates pending:
+Problems and debt:
+Current metrics:
+Next concrete action:
+```
+
+Track correctness/determinism, simulation throughput, platform parity, networking errors, rating/inventory consistency, AI baseline performance, and duplicated rules outside the core. Do not invent benchmark targets or mark unsupported metrics as passing.
