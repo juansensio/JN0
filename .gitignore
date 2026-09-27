@@ -6,3 +6,4 @@ __pycache__/
 *.pyc
 /client/.godot/
 /client/bin/*.dylib
+dist/
