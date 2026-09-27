@@ -14,7 +14,7 @@ One codebase produces multiple binaries and bindings. Do not fork rules by platf
 
 ## Planned repository layout
 
-The M0 skeleton now tracks these directories with responsibility READMEs. The deterministic C++ core, replay codec/executor, and headless checks are implemented through M1; later systems remain placeholders.
+The M0 skeleton now tracks these directories with responsibility READMEs. The deterministic C++ core, replay codec/executor, and headless checks are implemented through M1. M2 adds observation-only bots and the headless simulator/terminal CLI; later systems remain placeholders.
 
 | Path | Responsibility |
 | --- | --- |
@@ -44,6 +44,6 @@ Replays contain configuration, seed, and actor-tagged actions sufficient to reco
 
 ## Bots and AI
 
-Bots choose from core-provided observations and legal actions. Implement random and heuristic C++ baselines before training. Python orchestrates training with PyTorch while C++ continues to simulate games. Python bindings must preserve direct-core results and support vectorized environments without real-time waits.
+Bots choose from core-provided observations and legal actions. M2 implements seeded RandomBot and deterministic HeuristicBot in `janus_bots`, with match/batch execution in `janus_simulator` and terminal commands in `janus_cli`. Worker threads belong to the simulator; the rules core remains platform-independent. See [M2 protocol and validation](log/m2-validation.md). Python orchestrates training with PyTorch while C++ continues to simulate games. Python bindings must preserve direct-core results and support vectorized environments without real-time waits.
 
-Use reproducible seeds, checkpoints, and a fixed evaluation protocol. The trained agent must beat RandomBot under that protocol and eventually load into the game as a bot. Exact encoding, algorithm, model loading, and evaluation thresholds remain to be specified.
+Use reproducible seeds, checkpoints, and a fixed evaluation protocol. The trained agent must beat RandomBot under that protocol and eventually load into the game as a bot. For the trained agent, exact encoding, algorithm, model loading, and evaluation thresholds remain to be specified; M2 baseline evaluation is already fixed.

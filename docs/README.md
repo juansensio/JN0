@@ -14,3 +14,6 @@ Read these references before implementing a feature:
 - [Development commands](development.md) and [M0 validation](m0-validation.md): build/check instructions and milestone evidence.
 
 - [M1 validation](log/m1-validation.md): implemented core, coverage, determinism, replay parity, and exit-gate evidence.
+
+- [M2 protocol and validation](log/m2-validation.md): baseline bots, seat-paired evaluation, worker scaling, memory stress, and CLI integration evidence.
+- [Play the CLI game](../README.md): build, first games, legal-action prompts, and replays.

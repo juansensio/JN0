@@ -2,9 +2,9 @@
 
 ## Current baseline
 
-The source roadmap baseline was **ROADMAP DEFINED**, implementation not started. M0 is now **DONE**: 8/8 tasks complete and 5/5 gates passed, including user-confirmed hosted CI success. M1 is **DONE** with all four exit gates demonstrated locally. M2 is active and **NOT STARTED**; its next action is to specify the baseline-bot evaluation protocol and implement the headless simulator.
+The source roadmap baseline was **ROADMAP DEFINED**, implementation not started. M0 is now **DONE**: 8/8 tasks complete and 5/5 gates passed, including user-confirmed hosted CI success. M1 is **DONE** with all four exit gates demonstrated locally. M2 is now **DONE** with all five exit gates demonstrated locally. M3 is active and **NOT STARTED**; its next action is to integrate the core into Godot for offline PvE.
 
-Only mark a milestone done when every exit gate is demonstrated. M1–M6 follow sequential dependencies. M7 can begin after M2 and run alongside M3–M6. M8 can begin after M3. M9 requires M3–M8 to be complete. M0 and M1 are closed; M2 may begin. Later milestones retain their documented dependencies.
+Only mark a milestone done when every exit gate is demonstrated. M1–M6 follow sequential dependencies. M7 can begin after M2 and run alongside M3–M6. M8 can begin after M3. M9 requires M3–M8 to be complete. M0–M2 are closed; M3 may begin. M7 is now dependency-eligible. Later milestones retain their documented dependencies.
 
 ## M0 Spec and monorepo
 
@@ -28,15 +28,17 @@ Only mark a milestone done when every exit gate is demonstrated. M1–M6 follow 
 
 ## M2 Headless simulator and baseline bots
 
-**Active milestone. Status: NOT STARTED.**
+**Status: DONE.**
 
 **Depends on M1.** Create the simulator CLI, RandomBot, HeuristicBot, batch execution, and reproducible benchmarks. Add workers/threads where they improve performance.
 
 **Exit gates:** no Godot linkage or window; at least thousands of consecutive games without errors or evident memory leaks; benchmarks report games/s and worker scaling through the practical limit; RandomBot vs RandomBot completes automatically; HeuristicBot beats RandomBot under a defined statistical evaluation.
 
-**Evidence:** single/multi-worker games/s, benchmark game count, heuristic win rate, zero crashes. The exact statistical protocol must be specified.
+**Evidence:** [M2 protocol and validation](log/m2-validation.md). Release and sanitized Debug checks 8/8 PASS; one-million-game runs through all 12 hardware threads with identical results/checksums; approximately flat peak RSS from 10,000 to one million games; 100,000-game sanitized stress with no diagnostics. Fixed 10,000 seat-swapped seed pairs: 90.43% heuristic wins / 90.44% score / 89.2161% one-sided 95% lower score bound. Terminal human-versus-bot play and replay verification also pass.
 
 ## M3 Godot offline PvE
+
+**Active milestone. Status: NOT STARTED.**
 
 **Depends on M2.** Integrate Godot 4 through GDExtension/godot-cpp. Render cards as rectangles/text. Show hand, board, lives, turn, action selection, match result, and restart. Support human play against both baseline bots.
 
@@ -158,3 +160,19 @@ Problems/debt: validation is local on Apple Clang 21/macOS; hosted Ubuntu CI is 
 Current metrics: M1 gates 4/4 PASS; local Release/Debug test suites 2/2 PASS; determinism regressions 0; exact fixture parity PASS; rules duplicated outside core 0.
 
 Next concrete action: begin M2 by specifying the heuristic evaluation protocol, then implement simulator CLI and observation/legal-action-only RandomBot and HeuristicBot. Do not begin Godot or backend work before dependency gates.
+
+## M2 closure — 2026-09-27 / working tree
+
+Active milestone: M2. Status: DONE. Next active milestone: M3 NOT STARTED.
+
+Completed work: seeded observation/legal-action-only RandomBot and deterministic HeuristicBot; reusable simulator library; complete-match replays; deterministic indexed batch work with worker threads; paired statistical evaluation; reproducible throughput/scaling benchmark; CLI human-versus-bot play, bot match, batch, evaluate, benchmark, and replay verification; root README with first-game/manual-test instructions. Core rules and original Word sources unchanged; no Godot or backend implementation.
+
+Evidence: [M2 validation](log/m2-validation.md). Required configure/build/test PASS; Release and warnings-as-errors ASan/UBSan Debug CTest 8/8 PASS. Four terminal input games completed across both seats/bots and their saved replays verified. Fixed evaluation: 20,000 games, 18,086 heuristic wins, 1,910 losses, 4 draws; 90.44% score and 89.2161% lower score bound. One-million-game RandomBot batches run at 1/2/4/8/12 workers with exact action digest/count/result parity. Separate 100,000-game sanitized four-worker stress passed with no diagnostics.
+
+Gates met: headless/no Godot linkage; thousands of consecutive games without errors or evident memory leaks; throughput and worker scaling through hardware limit; automatic RandomBot-vs-RandomBot games; HeuristicBot beats RandomBot under the fixed paired statistical protocol. Gates pending: none for M2.
+
+Problems/debt: local macOS/Apple Clang validation only; hosted Ubuntu CI is configured but has not run on this working tree. macOS LeakSanitizer unavailable; no exhaustive leak-detector claim. Peak RSS from per-child resource accounting is approximately flat (2,129,920 bytes at 10,000 games; 2,146,304 bytes at one million). Timing depends on load and hardware; full final scaling measurements are in the validation log. Inference assumes independent pseudorandom seed-pair trials; fixed empirical superiority does not prove strength against all opponents/seeds.
+
+Current metrics: M2 gates 5/5 PASS; Release/Debug checks 8/8 PASS; worker determinism regressions 0; 62,300,744 actions per one-million-game benchmark run; 48,338.6 games/s with one worker and 159,217 games/s with eight workers (best tested, 3.294×); heuristic win rate 90.43%; rules duplicated outside core 0.
+
+Next concrete action: begin M3 by integrating the shared C++ core through GDExtension/godot-cpp, then build a minimal offline Godot view and legal-action input against both bots. M7 may run alongside later milestones, but is not included in M2 closure.

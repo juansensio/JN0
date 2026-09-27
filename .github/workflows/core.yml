@@ -9,5 +9,5 @@ jobs:
         run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON
       - name: Build
         run: cmake --build build --parallel
-      - name: Check contracts and gameplay
+      - name: Check core, bots, simulator, and CLI
         run: ctest --test-dir build --output-on-failure

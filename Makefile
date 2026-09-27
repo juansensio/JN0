@@ -8,3 +8,6 @@ build:
 
 test:
 	ctest --test-dir build --output-on-failure
+
+play:
+	./build/janus_cli play --seed 42 --bot random

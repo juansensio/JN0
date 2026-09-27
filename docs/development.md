@@ -18,9 +18,9 @@ cmake --build build --parallel
 ctest --test-dir build --output-on-failure
 ```
 
-Use a fresh directory for clean-build evidence. CTest must report `core_contracts` and `core_gameplay` passing. Explicit check failures remain enabled under Release/NDEBUG. The headless executables link `janus_core`: contract checks validate config/type contracts, and gameplay checks exercise real setup, all action transitions, illegal-action rejection, observation projection, exact replay-fixture parity, and 1,024 seeded complete games.
+Use a fresh directory for clean-build evidence. CTest must report all eight checks passing: core contracts/gameplay, bots/simulator, CLI match/replay, human play, and invalid worker/evaluation input. Explicit check failures remain enabled under Release/NDEBUG. The headless executables link `janus_core`: contract checks validate config/type contracts, and gameplay checks exercise real setup, all action transitions, illegal-action rejection, observation projection, exact replay-fixture parity, and 1,024 seeded complete games.
 
-`.github/workflows/core.yml` runs the same sequence on push, pull request, and manual dispatch. Hosted execution requires the changes on GitHub; a workflow file and local success alone do not pass CI. M1 gameplay, illegal-action, determinism, and complete-match checks run in the same CI sequence. Build output is ignored.
+`.github/workflows/core.yml` runs the same sequence on push, pull request, and manual dispatch. Hosted execution requires the changes on GitHub; a workflow file and local success alone do not pass CI. M1 gameplay and M2 bot, batch determinism, paired superiority, and CLI integration checks run in the same CI sequence. Build output is ignored.
 
 For additional local memory/undefined-behavior checks (Clang/GCC environments):
 
@@ -31,3 +31,15 @@ ctest --test-dir build/m1-sanitized --output-on-failure
 ```
 
 Full-state `Game::snapshot()` is the trusted M1 debugging representation. Replay JSON uses `parse_replay`, `encode_replay`, and `execute_replay`; see [replay.md](replay.md). No state restore API is exposed.
+
+## M2 simulator and terminal game
+
+Build produces `build/janus_cli`. See the root [README](../README.md) for human games, replay saving/verification, bot batches, and worker benchmarks. The simulator adds only the C++ standard threading library; no Godot or external dependency.
+
+The sanitizer commands above also cover all M2 targets; use `build/m2-sanitized` as a fresh directory. Additional stress check:
+
+```sh
+./build/m2-sanitized/janus_cli batch --games 100000 --workers 4
+```
+
+Choose a worker count supported by your hardware. Sanitizers run much slower than Release; benchmark Release separately without other checks running. Apple Clang/macOS AddressSanitizer does not provide LeakSanitizer; report that limitation alongside peak-memory stress observations. See [M2 evidence](log/m2-validation.md).
