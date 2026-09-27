@@ -1,6 +1,6 @@
 # MVP game rules
 
-These rules summarize the MVP Roadmap. M0 decisions below explicitly resolve its omissions; they are additions to the specification, not claims about the original source. Gameplay implementation remains M1.
+These rules summarize the MVP Roadmap. M0 decisions below explicitly resolve its omissions; they are additions to the specification, not claims about the original source. M1 implements and tests rules version 1.
 
 ## Setup
 
@@ -64,11 +64,11 @@ Termination needs no arbitrary cap: each Play consumes one of 24 initially undep
 - Empty hand and board: only Pass is legal, regardless of deck count. If the opponent also cannot act, their Pass yields a draw.
 - Terminal: wins have a winner and reason zero_lives; draws have no winner and reason both_players_stuck. All further actions fail unchanged until reset.
 
-The complete seeded match fixture and its reviewed trace are in [replay-v1.json](../tests/fixtures/replay-v1.json) and [replay-example.md](replay-example.md). M1 must execute them against the game core.
+The complete seeded match fixture and its reviewed trace are in [replay-v1.json](../tests/fixtures/replay-v1.json) and [replay-example.md](replay-example.md). M1 executes them against the game core and checks exact final state.
 
 ## Rule verification checklist
 
-Turn these into relevant tests during M1 using the resolved M0 specification:
+These are covered by M1 `tests/game_checks.cpp` using the resolved M0 specification:
 
 - Initial lives, hand size, proposed deck composition, and maximum board size.
 - Legal play transfers one card and draws exactly one when possible; an empty deck prevents a draw without causing defeat.

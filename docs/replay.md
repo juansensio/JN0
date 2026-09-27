@@ -1,6 +1,6 @@
 # Replay format 1 / rules 1
 
-[Schema](../protocol/replay-v1.schema.json), [complete fixture](../tests/fixtures/replay-v1.json), [trace review](replay-example.md). Replay is config + explicit seed + ordered accepted actions. Reset/setup is implicit; no state snapshot, external choices, FPS, callbacks, or timestamps are needed. Replay structs are declared in game.hpp; parsing/execution are M1 work.
+[Schema](../protocol/replay-v1.schema.json), [complete fixture](../tests/fixtures/replay-v1.json), [trace review](replay-example.md). Replay is config + explicit seed + ordered accepted actions. Reset/setup is implicit; no state snapshot, external choices, FPS, callbacks, or timestamps are needed. Replay structs are declared in game.hpp; M1 implements JSON parsing/encoding and execution in `janus/replay.hpp`.
 
 ## RNG and setup
 
@@ -30,4 +30,13 @@ Optional expected_result is a test assertion, never an input deciding a winner: 
 
 Reject malformed JSON/fields/ranges before execution. Reject unknown format/rules versions rather than silently upgrade. Execute only in a fresh Game reset from the supplied config/seed. Reject the first illegal action with its zero-based index/core error; never skip or auto-correct it. Actions after terminal are illegal. Complete-match replay must end terminal; truncated/ongoing logs may be diagnostic but cannot pass complete-match validation. If expected_result is present, require exact agreement. Return no partially reconstructed match on failure; do not mutate an existing game.
 
-Any change to setup, RNG consumption, identity/order, transition, visibility, or outcomes requires a new rules version. Encoding changes require a format version. The complete fixture was cross-checked as an M0 specification trace; executing it on the real C++ core and proving determinism remain M1 gates.
+Any change to setup, RNG consumption, identity/order, transition, visibility, or outcomes requires a new rules version. Encoding changes require a format version. The complete fixture was cross-checked as an M0 specification trace; M1 now executes it on the real C++ core, compares exact state, and proves repeated-run determinism.
+
+## C++ API (M1)
+
+- `parse_replay(json)` validates strict replay fields, versions, config, seed syntax/range, action shapes, and expected-result shape. It throws `std::invalid_argument` on malformed input; duplicate keys (including escaped equivalents), unknown fields, and excessive nesting are rejected. The codec handles the replay schema, not arbitrary JSON documents.
+- `encode_replay(replay)` validates the same domain values and emits compact JSON with decimal-string seed and optional expected result. Numeric formatting uses the classic locale. It preserves action order; it does not execute the sequence.
+- `execute_replay(replay, require_terminal = true)` creates a fresh Game, resets its seed, and validates each action. It returns an owned full `GameState` only on success. `ReplayExecutionError` exposes `action_index` (zero-based) and `action_error`; other validation failures throw `std::invalid_argument`.
+- `require_terminal = false` permits a diagnostic ongoing log; any supplied expected result must still match. Parsing and encoding validate representation, while execution validates legality, completeness, and outcome.
+
+The core performs no file I/O. Callers supply JSON text and decide how to store it. Full snapshots and replays contain private information and belong to trusted debugging/simulation tooling.

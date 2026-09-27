@@ -22,7 +22,7 @@ struct StepResult {
     GameResult result;
 };
 
-// M0 contract only. Lifecycle implementation and rule tests belong to M1.
+// Deterministic rules v1; snapshots are for trusted consumers only.
 class Game {
 public:
     explicit Game(GameConfig config = {}); // Invalid config: std::invalid_argument.
@@ -40,5 +40,6 @@ struct Replay {
     GameConfig config;
     Seed seed{};
     std::vector<Action> actions;
+    std::optional<GameResult> expected_result;
 };
 } // namespace janus

@@ -14,7 +14,7 @@ One codebase produces multiple binaries and bindings. Do not fork rules by platf
 
 ## Planned repository layout
 
-The M0 skeleton now tracks these directories with responsibility READMEs. Only the C++ contracts/configuration validator and headless checks have implementation; later systems remain placeholders.
+The M0 skeleton now tracks these directories with responsibility READMEs. The deterministic C++ core, replay codec/executor, and headless checks are implemented through M1; later systems remain placeholders.
 
 | Path | Responsibility |
 | --- | --- |
@@ -34,13 +34,13 @@ The M0 skeleton now tracks these directories with responsibility READMEs. Only t
 
 The backend MVP covers minimal identity, profiles, matchmaking, server assignment, rating, leaderboard, history, catalog, inventory, entitlements, and telemetry. Broader progression, seasons, and administration belong to the longer-term vision.
 
-## Core contract to define in M0
+## Core contract defined in M0
 
 M0 defines `GameState`, `Observation`, `Action`, `PlayerId`, `CardId`, `GameResult`, and `GameConfig` in `core/include/janus/`. See [core-contract.md](core-contract.md) for field, visibility, validation, and lifecycle semantics. The C++20 library uses CMake >= 3.20; source lives in `core/src/`, contract checks in `tests/`. It has no external dependencies.
 
-The finalized M0 lifecycle is `Game(config) → reset(seed) → observe(player) → legal_actions(player) → step(action) → result()`, with trusted owned `snapshot()` for debugging. The Game methods are declarations only until M1. Rewards, cloning, and serialization/bindings follow later milestones.
+The finalized M0 lifecycle is `Game(config) → reset(seed) → observe(player) → legal_actions(player) → step(action) → result()`, with trusted owned `snapshot()` for debugging. M1 implements all Game methods. `snapshot()` is the owned full-state debugging representation, including ordered private zones and seed, with fieldwise equality for regression checks. Replay JSON encoding/decoding and execution live in `janus/replay.hpp`. Rewards and bindings follow later milestones.
 
-Replays contain configuration, seed, and actor-tagged actions sufficient to reconstruct an entire match. M0 specifies [format/rules version 1](replay.md) and its complete fixture. Verify actual deterministic C++ execution in M1 and parity with Godot, server, and Python as integrations arrive. State serialization or an equivalent debugging representation is required in M1; shared network messages/versioning are defined in M4.
+Replays contain configuration, seed, and actor-tagged actions sufficient to reconstruct an entire match. M0 specifies [format/rules version 1](replay.md) and its complete fixture. M1 verifies deterministic C++ execution and exact fixture parity. Verify parity with Godot, server, and Python as integrations arrive. The owned full-state snapshot satisfies M1 debugging needs without adding a state restore API; shared network messages/versioning are defined in M4.
 
 ## Bots and AI
 

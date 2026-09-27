@@ -1,6 +1,6 @@
-# M0 validation — 2026-09-27 working tree
+# M0 validation and closure — 2026-09-27
 
-Milestone IN PROGRESS, not closed. M0-01–06 DONE; M0-07 pending hosted run; M0-08 waiting for closure evidence. Results apply to this working tree, not a published commit.
+Milestone DONE: 8/8 tasks and 5/5 gates pass. Baseline revision `c0c770ff0e324989be55a46a171797981f1b015c`; closure documentation and Makefile fix are subsequent working-tree changes. M1 is active and NOT STARTED.
 
 ## Local build evidence
 
@@ -24,10 +24,16 @@ Checks exercise real configuration validation (defaults, version, deck, lives, i
 | G0-2 | PASS | Four Action payloads; complete phase table, including Pass/Defend/terminal; reviewed 62-action trace |
 | G0-3 | PASS | GameState owns all zones; Observation has only own hand/public values; contract visibility policy and owned-data check |
 | G0-4 | PASS | replay.md RNG/setup/encoding/errors/version policy; schema; complete seeded fixture ending in player 0 win |
-| G0-5 | PENDING | Local build/checks pass; CI workflow exists; successful hosted execution not yet recorded |
+| G0-5 | PASS | Clean local build/checks; CI workflow; user-confirmed hosted CI pass on 2026-09-27 |
 
 All source-open gameplay questions have explicit decisions. All identity, ordering, configuration, action, rejection, RNG, and replay questions have documented contracts. Open gameplay/contract questions: 0. Original source files unchanged; added choices are identified as M0 decisions. No original combat/life rule was changed.
 
 Fixture JSON parses; schema JSON parses; shapes and full trace were reviewed. A JSON Schema validator is unavailable locally, so no machine schema-validation success is claimed. The independent fixture calculation is specification evidence only; it is not a substitute for M1 replay execution on the C++ core.
 
-Hosted CI was not run for these unpublished changes. No push or workflow execution is claimed. After publishing, record the commit and successful workflow URL here, finish M0-07/M0-08 checkboxes, and activate M1 only then. M1 first implements setup/RNG with seed-0 golden tests and proceeds to transitions/visibility/replays.
+## Closure evidence and handoff
+
+On 2026-09-27 the user reported “ci / cd passes” and authorized closing M0. This supplies the previously missing hosted CI evidence for M0-07/G0-5. No run URL was supplied; independent retrieval was unavailable because the GitHub CLI is not installed. Hosted success is explicitly user-reported, not a locally observed run. The M0 gate concerns CI configure/build/test; no deployment capability is claimed.
+
+The added Makefile wraps configure/build/test. Its command targets are now phony, preventing the existing build directory from causing `make build` to skip compilation. Local verification: `make configure`, `make build`, `make test` succeeded; core_contracts 1/1 PASS. Documentation/task tracker/roadmap now agree: M0 DONE, M1 active and NOT STARTED. No gates remain pending.
+
+Nonblocking debt: local machine JSON Schema validation remains unavailable. M1 first implements setup/RNG with seed-0 golden tests, then transitions, visibility, illegal-action tests, and complete-match deterministic replay execution.

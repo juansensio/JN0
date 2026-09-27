@@ -4,7 +4,7 @@ M0 turns the MVP rules into an implementable specification and prepares a minima
 
 ## Progress status
 
-Last updated: 2026-09-27. **Milestone status: IN PROGRESS. Tasks complete: 6/8. Exit gates passed: 4/5.** Local contracts/build pass; hosted CI execution is pending. See [validation evidence](m0-validation.md).
+Last updated: 2026-09-27. **Milestone status: DONE. Tasks complete: 8/8. Exit gates passed: 5/5.** Local contracts/build pass; successful hosted CI is confirmed by the user on 2026-09-27. See [validation evidence](m0-validation.md).
 
 | ID | Task | Depends on | Status | Evidence |
 | --- | --- | --- | --- | --- |
@@ -14,8 +14,8 @@ Last updated: 2026-09-27. **Milestone status: IN PROGRESS. Tasks complete: 6/8. 
 | M0-04 | Define actions and game lifecycle | M0-03 | DONE | game.hpp; phase table; complete trace |
 | M0-05 | Specify deterministic RNG and replay | M0-04 | DONE | replay.md; schema; 62-action seed-0 fixture/review |
 | M0-06 | Add minimal C++ build and contract checks | M0-04 | DONE | Clean Release build; core_contracts 1/1 pass |
-| M0-07 | Add basic CI and developer commands | M0-05, M0-06 | IN PROGRESS | Workflow and local commands verified; hosted run pending |
-| M0-08 | Audit M0 exit gates and hand off to M1 | M0-01 through M0-07 | BLOCKED | Audit recorded; closure waits for hosted CI |
+| M0-07 | Add basic CI and developer commands | M0-05, M0-06 | DONE | Workflow; verified Makefile commands; user-confirmed CI pass |
+| M0-08 | Audit M0 exit gates and hand off to M1 | M0-01 through M0-07 | DONE | Closure record in roadmap.md and m0-validation.md |
 
 M0-01 and M0-02 can proceed independently. After M0-04, replay specification and build work can proceed independently. BLOCKED here means a prerequisite is incomplete, not that user intervention is necessarily required.
 
@@ -118,7 +118,7 @@ M0-01 and M0-02 can proceed independently. After M0-04, replay specification and
 - [x] Build or check failures make CI fail; no required check is silently skipped.
 - [x] Required toolchain/build-tool versions and working-directory assumptions are documented.
 - [x] Local commands have been run successfully from a clean build directory.
-- [ ] A successful CI execution is recorded. If hosted CI is unavailable, keep this item pending and record the limitation; configuration alone is not a passing run.
+- [x] A successful CI execution is recorded. If hosted CI is unavailable, keep this item pending and record the limitation; configuration alone is not a passing run.
 - [x] Update `AGENTS.md` with real build/test guidance once commands exist.
 
 **Evidence to record:** CI configuration path, successful run/log reference, and local verification output. M8 owns the later multiplatform build matrix.
@@ -129,10 +129,10 @@ M0-01 and M0-02 can proceed independently. After M0-04, replay specification and
 
 **Completion gates:**
 
-- [ ] M0-01 through M0-07 are DONE with evidence; unresolved gameplay/contract questions = 0.
-- [ ] All five milestone exit gates below pass on the recorded repository revision.
-- [ ] Record remaining nonblocking debt separately; no debt invalidates a gate.
-- [ ] Update this task list and the roadmap together. Mark M0 DONE and activate M1 only after the evidence supports closure.
+- [x] M0-01 through M0-07 are DONE with evidence; unresolved gameplay/contract questions = 0.
+- [x] All five milestone exit gates below pass on the recorded repository revision.
+- [x] Record remaining nonblocking debt separately; no debt invalidates a gate.
+- [x] Update this task list and the roadmap together. Mark M0 DONE and activate M1 only after the evidence supports closure.
 
 ## Milestone exit gate dashboard
 
@@ -144,9 +144,9 @@ PENDING means the gate has not yet been demonstrated. Use PASS only with evidenc
 | G0-2 All game transitions expressible through Action | Complete transition table and full-match action trace | M0-01, M0-04 | PASS |
 | G0-3 GameState and Observation clearly separated | Separate C++ types and documented visibility policy | M0-03, M0-06 | PASS |
 | G0-4 Replay can represent a complete game | Versioned config + seed + action schema and complete fixture review | M0-05 | PASS |
-| G0-5 Minimal C++ project builds with basic CI | Clean local build, passing initial checks, successful CI run | M0-02, M0-06, M0-07 | PENDING |
+| G0-5 Minimal C++ project builds with basic CI | Clean local build, passing initial checks, successful CI run | M0-02, M0-06, M0-07 | PASS |
 
-Current metrics: clean build = **PASS**; initial tests = **1/1 PASS**; unresolved rule/contract questions = **0**; complete replay fixture = **62 actions, seed 0, player 0 wins** (specification review only); hosted CI = **NOT RUN**. G0-5 stays PENDING until a successful hosted run is recorded.
+Current metrics: clean build = **PASS**; initial tests = **1/1 PASS**; unresolved rule/contract questions = **0**; complete replay fixture = **62 actions, seed 0, player 0 wins** (specification review only); hosted CI = **PASS (user-confirmed)**. All M0 gates pass; M1 is active and NOT STARTED.
 
 ## How to update progress
 
@@ -169,4 +169,12 @@ Next action:
 
 M0-01 through M0-06 DONE; M0-07 IN PROGRESS; M0-08 BLOCKED by hosted CI execution. [m0-validation.md](m0-validation.md) records commands/toolchain/results and the four passing gate reviews. No M1 gameplay has been implemented. Rule questions = 0; contract questions = 0. JSON files parse, but a JSON Schema validator is unavailable locally; full replay loading/execution remains M1.
 
-Next concrete action: run `.github/workflows/core.yml` on the published revision and record its successful URL/revision. Then finish M0-07/M0-08, close M0, and activate M1. Do not equate the workflow configuration with a passing CI run.
+The above implementation entry records the state before closure; the following entry supersedes its pending statuses.
+
+## Closure — 2026-09-27
+
+M0-07 and M0-08 DONE. The user confirmed CI/CD passes and authorized M0 closure. Baseline revision: `c0c770ff0e324989be55a46a171797981f1b015c`; closure documentation and Makefile phony-target fix are subsequent working-tree changes. Hosted success is user-reported; no run URL was supplied, and independent retrieval was unavailable because the GitHub CLI is not installed. Evidence attribution is explicit in [m0-validation.md](m0-validation.md).
+
+Makefile configure/build/test commands pass locally. All eight tasks and five gates are complete; unresolved gameplay/contract questions = 0. JSON Schema machine validation remains nonblocking debt; gameplay and deterministic replay execution remain M1 work.
+
+Next concrete action: M1 setup/reset and specified RNG implementation with seed-0 golden tests, then transitions, observation projection, illegal-action tests, and complete-match replay verification.

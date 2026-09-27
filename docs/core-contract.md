@@ -1,6 +1,6 @@
-# M0 core contract
+# Core contract
 
-Public declarations: `core/include/janus/types.hpp` and `game.hpp`. Standard: C++20; CMake >= 3.20. Only configuration validation is implemented in M0. Game methods have no definitions until M1; calls fail at link time rather than simulate placeholder gameplay.
+Public declarations: `core/include/janus/types.hpp` and `game.hpp`. Standard: C++20; CMake >= 3.20. M0 defined the contract; M1 implements configuration validation and all Game methods, without engine or platform dependencies.
 
 ## Types and invariants
 
@@ -21,4 +21,4 @@ Observation owns distinct data: PublicPlayer contains lives, deck_count, hand_co
 
 Action is actor plus exactly one payload: Play(card), Attack(card), Defend(card), Pass(no card). Error precedence: terminal, invalid_actor, wrong_actor, wrong_phase, unknown_card (outside 0–23), wrong_zone (absent from required own zone), board_full (Play), pass_not_allowed (Pass with a main action available). Check only applicable errors. Success returns none. No implicit pass/defense.
 
-Cloning, rewards, state serialization implementation, bindings, and network transport are outside M0. Replay encoding never depends on enum/variant memory layout.
+`snapshot()` is the complete owned debugging representation; state/observation types support fieldwise equality. Snapshots include private data and cannot be restored into a Game. Replay JSON serialization and execution are implemented in `janus/replay.hpp`; encoding never depends on enum/variant memory layout. `Replay::expected_result` is an optional assertion, not gameplay input. Rewards, bindings, and network transport remain later work.

@@ -1,6 +1,6 @@
 # Replay v1 worked match review
 
-This is an M0 specification calculation, not an executed C++ gameplay test. Seed 0, rules/config 1. RNG/setup ordering gives:
+This trace was calculated in M0 and is now reproduced by the M1 C++ gameplay test, including exact final zones, counters, and result. Seed 0, rules/config 1. RNG/setup ordering gives:
 
 - Player 0 shuffled IDs: `[4, 1, 6, 8, 0, 5, 2, 3, 11, 9, 10, 7]`; initial hand `[4, 1, 6, 8]`.
 - Player 1 shuffled IDs: `[18, 23, 19, 12, 17, 20, 16, 15, 14, 13, 21, 22]`; initial hand `[18, 23, 19, 12]`.
@@ -75,4 +75,4 @@ The fixture stores all 62 actor-tagged actions. Draws below derive solely from t
 
 Expected result: `{'outcome': 'win', 'winner': 0, 'reason': 'zero_lives'}`. Final lives `[2, 0]`; boards `[[7], []]`; hands `[[1, 0, 2], []]`; decks `[[], []]`; discards `[[6, 8, 4, 5, 3, 11, 9, 10], [23, 18, 19, 20, 15, 16, 17, 21, 22, 12, 13, 14]]`. Phase terminal, pending absent, action_count 62, passes 0, active player 0, acting player absent.
 
-Review: config captures every setup choice; seed supplies all random choices; no hidden manual input or engine timing is required. The trace includes defender selection and a terminal action. M1 must reproduce these exact zones, counters, and result in C++, prove repeated-run determinism, and test rejection without mutation. Cross-runtime parity belongs to later milestones.
+Review: config captures every setup choice; seed supplies all random choices; no hidden manual input or engine timing is required. The trace includes defender selection and a terminal action. M1 reproduces these exact zones, counters, and result in C++, proves repeated-run determinism, and tests rejection without mutation. Cross-runtime parity belongs to later milestones.

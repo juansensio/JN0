@@ -50,6 +50,7 @@ struct PlayerState {
     std::vector<Card> hand;
     std::vector<Card> board;
     std::vector<Card> discard;
+    bool operator==(const PlayerState&) const = default;
 };
 struct GameState {
     GameConfig config;
@@ -61,6 +62,7 @@ struct GameState {
     std::uint8_t consecutive_passes{};
     std::uint64_t action_count{};
     GameResult result;
+    bool operator==(const GameState&) const = default;
 };
 struct PublicPlayer {
     std::uint8_t lives{};
@@ -68,6 +70,7 @@ struct PublicPlayer {
     std::uint8_t hand_count{};
     std::vector<Card> board;
     std::vector<Card> discard;
+    bool operator==(const PublicPlayer&) const = default;
 };
 // Owned values only: no reference or pointer into complete private state.
 struct Observation {
@@ -82,5 +85,6 @@ struct Observation {
     std::uint8_t consecutive_passes{};
     std::uint64_t action_count{};
     GameResult result;
+    bool operator==(const Observation&) const = default;
 };
 } // namespace janus

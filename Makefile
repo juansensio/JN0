@@ -1,3 +1,5 @@
+.PHONY: configure build test
+
 configure:
 	cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON
 

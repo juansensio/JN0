@@ -2,29 +2,33 @@
 
 ## Current baseline
 
-The source roadmap baseline was **ROADMAP DEFINED**, implementation not started. M0 is now the active milestone and **IN PROGRESS**: 6/8 tasks complete and 4/5 gates passed. Contracts, specifications, skeleton, local build/checks, and CI configuration exist. M0 remains open until hosted CI succeeds; M1 gameplay has not started.
+The source roadmap baseline was **ROADMAP DEFINED**, implementation not started. M0 is now **DONE**: 8/8 tasks complete and 5/5 gates passed, including user-confirmed hosted CI success. M1 is **DONE** with all four exit gates demonstrated locally. M2 is active and **NOT STARTED**; its next action is to specify the baseline-bot evaluation protocol and implement the headless simulator.
 
-Only mark a milestone done when every exit gate is demonstrated. M1–M6 follow sequential dependencies. M7 can begin after M2 and run alongside M3–M6. M8 can begin after M3. M9 requires M3–M8 to be complete. Until M0 closes, all later work is blocked.
+Only mark a milestone done when every exit gate is demonstrated. M1–M6 follow sequential dependencies. M7 can begin after M2 and run alongside M3–M6. M8 can begin after M3. M9 requires M3–M8 to be complete. M0 and M1 are closed; M2 may begin. Later milestones retain their documented dependencies.
 
 ## M0 Spec and monorepo
 
-**Task tracker:** [M0 implementation tasks](m0-tasks.md). Implementation IN PROGRESS, with 6/8 tasks complete and 4/5 exit gates passed. M0-07 awaits a successful hosted CI run; M0-08 cannot close before that evidence.
+**Task tracker:** [M0 implementation tasks](m0-tasks.md). **DONE**, with 8/8 tasks complete and 5/5 exit gates passed. See [closure evidence](m0-validation.md).
 
 **Work:** create the target directories in [architecture](architecture.md), formalize rules and edge cases, define the core types and lifecycle, and specify replay as config + seed + actions. Add a minimal C++ project and basic CI.
 
 **Exit gates:** no rule depends on Godot; every game transition is representable by `Action`; `GameState` and `Observation` are clearly separated; replay represents a complete game; the minimal C++ project builds with basic CI.
 
-**Evidence:** clean build yes/no, initial tests pass/fail, and zero unresolved rule questions. See [game rules](game-rules.md) for the current questions.
+**Evidence:** clean local build PASS; initial tests 1/1 PASS; hosted CI PASS (user-confirmed); unresolved gameplay/contract questions 0. See [M0 validation](m0-validation.md).
 
 ## M1 Deterministic C++ core
+
+**Status: DONE.**
 
 **Depends on M0.** Implement setup, seeded shuffle, draws, hands, boards, lives, legal actions, play, attack/defend, combat, direct damage, and terminal results. Add serialization or an equivalent debugging representation and unit/full-game tests.
 
 **Exit gates:** all MVP rules have relevant tests; repeated config + seed + actions gives exactly the same result; a full match runs from tests without Godot; the core rejects illegal actions.
 
-**Evidence:** tests pass, rule cases covered, zero determinism-regression failures.
+**Evidence:** [M1 validation](log/m1-validation.md). Release and sanitized Debug CTest 2/2 PASS; all rule/illegal-action cases covered; exact 62-action fixture parity; 1,024 complete seeded games / 63,801 actions / zero determinism regressions. The owned full-state snapshot provides the required debugging representation. Hosted CI for these changes has not been executed locally.
 
 ## M2 Headless simulator and baseline bots
+
+**Active milestone. Status: NOT STARTED.**
 
 **Depends on M1.** Create the simulator CLI, RandomBot, HeuristicBot, batch execution, and reproducible benchmarks. Add workers/threads where they improve performance.
 
@@ -126,3 +130,31 @@ Problems/debt: local JSON Schema validator unavailable; schema/fixture JSON pars
 Metrics: 6/8 tasks DONE; 4/5 gates PASS; clean build PASS; initial tests 1/1 PASS; unresolved gameplay/contract questions 0; replay fixture 62 accepted actions, seed 0, player 0 wins. No gameplay throughput/platform/network metrics exist yet.
 
 Next action: execute hosted CI for this revision, record run URL and commit, complete M0-07/M0-08 and activate M1. First M1 action: implement reset/setup and specified RNG with seed-0 golden ordering tests before implementing transitions.
+
+## M0 closure — 2026-09-27
+
+Baseline revision: `c0c770ff0e324989be55a46a171797981f1b015c`; closure docs and Makefile fix are working-tree changes. Status: M0 DONE; active milestone M1 NOT STARTED.
+
+Completed: M0-07 hosted CI success confirmed by the user; M0-08 final gate audit and handoff. Added Makefile guidance and declared command targets phony so the build directory cannot suppress compilation.
+
+Evidence: user message “ci / cd passes” on 2026-09-27; [M0 validation](m0-validation.md); local `make configure`, `make build`, and `make test` pass with 1/1 contract checks. Hosted result is user-reported, not independently retrieved; no run URL supplied. All five exit gates PASS; all eight tasks DONE; no unresolved rule/contract questions.
+
+Nonblocking debt: machine JSON Schema validation unavailable locally. Full gameplay, observation projection, replay execution, and deterministic parity are M1 gates and are not claimed complete.
+
+Next action: implement M1 reset/setup and SplitMix64/bounded shuffle, with seed-0 golden deck/starter tests before gameplay transitions.
+
+## M1 closure — 2026-09-27 / working tree
+
+Active milestone: M1. Status: DONE. Next active milestone: M2 NOT STARTED.
+
+Completed work: pure C++20 Game lifecycle; SplitMix64 and unbiased Fisher–Yates setup; draw/play/attack/explicit defense/pass; ordered zones and public discards; lives/win/draw/terminal handling; legal actions and specified error precedence; owned observations and complete debugging snapshots; strict replay JSON parser/encoder and fresh-game executor with indexed legality failures. No rule changes or new rules version; original source documents unchanged.
+
+Evidence: [M1 validation](log/m1-validation.md). Required `make configure`, `make build`, `make test` PASS; CTest 2/2 PASS. Fresh Debug build with warnings as errors and AddressSanitizer/UndefinedBehaviorSanitizer PASS, CTest 2/2 with no diagnostics. The seed-0 fixture executes all 62 accepted actions and matches every final field. Repeated states and JSON-reconstructed states match across 1,024 complete seeded games (822 wins, 202 draws, 63,801 actions).
+
+Gates met: all MVP rules have relevant tests; config + seed + actions reproduces exact state/result; complete matches run headlessly without Godot; illegal actions are rejected without state mutation. Gates pending: none for M1.
+
+Problems/debt: validation is local on Apple Clang 21/macOS; hosted Ubuntu CI is configured to run both tests but has not yet run on these working-tree changes. Godot/server/Python parity belongs to their integration milestones. Standalone JSON Schema tooling remains unavailable; the implemented strict codec validates replay fields/config/ranges and is covered by malformed-input tests. No M2 throughput, bot strength, mass-simulation memory, or platform-parity claims.
+
+Current metrics: M1 gates 4/4 PASS; local Release/Debug test suites 2/2 PASS; determinism regressions 0; exact fixture parity PASS; rules duplicated outside core 0.
+
+Next concrete action: begin M2 by specifying the heuristic evaluation protocol, then implement simulator CLI and observation/legal-action-only RandomBot and HeuristicBot. Do not begin Godot or backend work before dependency gates.

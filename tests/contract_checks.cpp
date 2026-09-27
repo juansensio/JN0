@@ -35,6 +35,6 @@ int main() {
     janus::Action action{janus::PlayerId::first, janus::Defend{{9}}};
     check(std::get<janus::Defend>(action.payload).card.value == 9, "Action payload lost identity");
     check(!janus::GameResult{}.winner.has_value(), "Ongoing result has winner");
-    if (failures == 0) std::cout << "M0 contracts passed; gameplay is not implemented.\n";
+    if (failures == 0) std::cout << "Core contract checks passed.\n";
     return failures == 0 ? 0 : 1;
 }

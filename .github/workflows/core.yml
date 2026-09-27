@@ -1,4 +1,4 @@
-name: Core contracts
+name: Core checks
 on: [push, pull_request, workflow_dispatch]
 jobs:
   contracts:
@@ -9,5 +9,5 @@ jobs:
         run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON
       - name: Build
         run: cmake --build build --parallel
-      - name: Check contracts
+      - name: Check contracts and gameplay
         run: ctest --test-dir build --output-on-failure
