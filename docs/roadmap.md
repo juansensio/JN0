@@ -207,3 +207,8 @@ added outside core 0. Setup output equality is not full-match replay parity.
 
 Next concrete action: when starting M3, expose player Observation and legal actions
 through the adapter, then implement the minimal offline view/input against both bots.
+
+Documentation follow-up: added [the C++ ↔ Godot integration guide](godot-integration.md)
+covering current loading/ownership/binding behavior and the future feature workflow.
+Planned interfaces are explicitly distinguished from implemented smoke methods.
+No rules, interfaces, or milestone gates changed; M3 remains NOT STARTED.

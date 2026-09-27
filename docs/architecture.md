@@ -4,7 +4,7 @@
 
 All game rules exist once in a pure C++20/23 core. It owns state, turn progression, effects, seeded randomness, legal actions, observations, victory conditions, and results. It must not depend on Godot, rendering, audio, networking, operating-system services, or platform APIs.
 
-Godot 4 owns presentation, input, animation, audio, and platform integration. GDScript is appropriate for UI; game rules must stay in C++. Integrate through GDExtension/godot-cpp.
+Godot 4 owns presentation, input, animation, audio, and platform integration. GDScript is appropriate for UI; game rules must stay in C++. Integrate through GDExtension/godot-cpp. See [the integration guide](godot-integration.md) for the current smoke-test wiring and future adapter feature workflow.
 
 Offline/PvE runs the core locally and requires no backend. Ranked runs the same core in an authoritative match server. Clients send actions and present permitted observations; they cannot decide results or mutate authoritative state. Never expose the complete hidden-information state as a player's observation.
 

@@ -8,3 +8,5 @@ The full snapshot is used only inside this trusted diagnostic; no private card
 data is returned to GDScript. Future player-facing presentation must use
 `Observation`. This is a pre-M3 loading check, not offline PvE or replay parity.
 See [build/run instructions](../../docs/development.md#pre-m3-godot-smoke-test).
+See [the integration guide](../../docs/godot-integration.md) for loading,
+ownership, method binding, and future observation/action interfaces.
